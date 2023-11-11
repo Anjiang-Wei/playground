@@ -22,7 +22,7 @@ function Array(ElemType)
     return ArrayType
 end
 
-FloatArray = Array(float)
+FloatArray = Array(float) -- Terra types are Lua values
 
 terra mysum(size: int64): float
     var r: FloatArray
