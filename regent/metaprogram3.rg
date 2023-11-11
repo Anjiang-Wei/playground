@@ -22,4 +22,9 @@ terra scale(a: float): float
 end
 
 scale:printpretty()
+-- ent/metaprogram3.rg:19: terra scale(a : float) : float
+-- ent/metaprogram3.rg:20:     var COEFF : double = 6
+-- ent/metaprogram3.rg:21:     return [float](
+-- ent/metaprogram3.rg:16:                    COEFF * [double](a))
+-- ent/metaprogram3.rg:19: end
 c.printf("Answer %f\n", scale(7.0))
