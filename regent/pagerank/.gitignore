@@ -1,0 +1,5 @@
+build/*
+gen_graph.sh
+pagerank.rg
+pagerank_scheme1.rg
+pagerank_scheme2.rg
