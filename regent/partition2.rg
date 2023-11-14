@@ -48,10 +48,10 @@ task main()
     end
 
     -- partition the nodes with image(parent_region, source_region, data_region.field)
-    var node_partition = image(nodes, edge_partition, edges.source_node)
-    for color in node_partition.colors do
-        c.printf("Node subregion %d: ", color)
-        for n in node_partition[color] do
+    var node_partition1 = image(nodes, edge_partition, edges.source_node)
+    for color in node_partition1.colors do
+        c.printf("Node subregion source %d: ", color)
+        for n in node_partition1[color] do
             c.printf("%d ", n.id)
         end
         c.printf("\n")
@@ -61,8 +61,41 @@ task main()
 
     var node_partition2 = image(nodes, edge_partition, edges.dest_node)
     for color in node_partition2.colors do
-        c.printf("Node subregion %d: ", color)
+        c.printf("Node subregion dest %d: ", color)
         for n in node_partition2[color] do
+            c.printf("%d ", n.id)
+        end
+        c.printf("\n")
+    end
+
+    c.printf("-------------------\n")
+
+    var node_partition_diff1 = node_partition1 - node_partition2
+    for color in node_partition_diff1.colors do
+        c.printf("Node subregion diff source - dest %d: ", color)
+        for n in node_partition_diff1[color] do
+            c.printf("%d ", n.id)
+        end
+        c.printf("\n")
+    end
+
+    c.printf("-------------------\n")
+
+    var node_partition_diff2 = node_partition2 - node_partition1
+    for color in node_partition_diff2.colors do
+        c.printf("Node subregion diff dest - source %d: ", color)
+        for n in node_partition_diff2[color] do
+            c.printf("%d ", n.id)
+        end
+        c.printf("\n")
+    end
+
+    c.printf("-------------------\n")
+
+    var node_partition_and = node_partition1 & node_partition2
+    for color in node_partition_and.colors do
+        c.printf("Node subregion dest & source %d: ", color)
+        for n in node_partition_and[color] do
             c.printf("%d ", n.id)
         end
         c.printf("\n")
