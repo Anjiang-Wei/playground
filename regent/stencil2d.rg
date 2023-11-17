@@ -10,12 +10,11 @@ fspace Fields {
 task create_interior_partition(r_image: region(ispace(int2d), Fields))
     var coloring = c.legion_domain_coloring_create()
     var bounds = r_image.ispace.bounds
-    -- todo: debug this line, no applicable overloaded function legion_domain_point_coloring_color_domain for arguments
-    c.legion_domain_point_coloring_color_domain(coloring, 0, 
-        rect2d{bounds.lo + {2, 2}, bounds.hi - {2, 2} })
-    var interior_partition = partition(disjoint, r_image, coloring)
+    c.legion_domain_coloring_color_domain(coloring, 0, 
+        rect2d { bounds.lo + {2, 2}, bounds.hi - {2, 2} })
+    var interior_image_partition = partition(disjoint, r_image, coloring)
     c.legion_domain_coloring_destroy(coloring)
-    return interior_partition
+    return interior_image_partition
 end
 
 task compute(r_halo: region(ispace(int2d), Fields),
@@ -39,7 +38,7 @@ task toplevel()
     var p_private_colors = ispace(int2d, machine)
     var p_private = partition(equal, r_interior, p_private_colors)
 
-    var c_halo = c.legion_domain_coloring_create()
+    var c_halo = c.legion_domain_point_coloring_create()
     for color in p_private_colors do
         var bounds = p_private[color].bounds
         var halo_bounds: rect2d = rect2d{bounds.lo - {2,2}, bounds.hi + {2,2}}
@@ -48,7 +47,7 @@ task toplevel()
     
     -- partition(properties, parent, coloring_object, color_space)
     var p_halo = partition(aliased, r_image, c_halo, p_private_colors)
-    c.legion_domain_coloring_destroy(c_halo)
+    c.legion_domain_point_coloring_destroy(c_halo)
 
     fill(r_image.field1, 0.0)
     fill(r_image.field2, 0.0)
