@@ -20,7 +20,7 @@ end
 task compute(r_halo: region(ispace(int2d), Fields),
              r_interior: region(ispace(int2d), Fields))
 where
-    reads(r_halo), writes (r_interior)
+    reads(r_halo.field1), writes (r_interior.field2)
 do
     for e in r_interior do
         r_interior[e].field2 = r_halo[e + {1, 1}].field1
@@ -57,5 +57,5 @@ task toplevel()
     end
 end
 
-local target = os.get_env("OBJNAME")
-regentlib.saveobj(target, toplevel, "executable")
+local target = os.getenv("OBJNAME")
+regentlib.saveobj(toplevel, target, "executable")
