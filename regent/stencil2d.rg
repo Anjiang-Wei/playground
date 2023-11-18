@@ -24,6 +24,8 @@ task compute(r_halo: region(ispace(int2d), Fields),
 where
     reads(r_halo.field1), writes (r_interior.field2)
 do
+    format.println("compute r_halo.ispace.bounds = {}, r_interior.ispace.bounds = {}",
+        r_halo.ispace.bounds, r_interior.ispace.bounds)
     for e in r_interior do
         r_interior[e].field2 = r_halo[e + {1, 1}].field1
     end
