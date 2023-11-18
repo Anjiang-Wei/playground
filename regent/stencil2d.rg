@@ -20,15 +20,28 @@ task create_interior_partition(r_image: region(ispace(int2d), Fields))
 end
 
 __demand(__cuda)
-task compute(r_halo: region(ispace(int2d), Fields),
-             r_interior: region(ispace(int2d), Fields))
+task compute1(r_halo: region(ispace(int2d), Fields),
+              r_interior: region(ispace(int2d), Fields))
 where
-    reads(r_halo.field1), writes (r_interior.field2)
+    reads(r_halo.field1), reduces+(r_interior.field2)
 do
     format.println("compute r_halo.ispace.bounds = {}, r_interior.ispace.bounds = {}",
         r_halo.ispace.bounds, r_interior.ispace.bounds)
     for e in r_interior do
-        r_interior[e].field2 = r_halo[e + {1, 1}].field1
+        r_interior[e].field2 += r_halo[e + {1, 1}].field1
+    end
+end
+
+__demand(__cuda)
+task compute2(r_halo: region(ispace(int2d), Fields),
+              r_interior: region(ispace(int2d), Fields))
+where
+    reads(r_halo.field2), reduces+(r_interior.field1)
+do
+    format.println("compute r_halo.ispace.bounds = {}, r_interior.ispace.bounds = {}",
+        r_halo.ispace.bounds, r_interior.ispace.bounds)
+    for e in r_interior do
+        r_interior[e].field1 += r_halo[e + {1, 1}].field2
     end
 end
 
@@ -57,9 +70,14 @@ task toplevel()
     fill(r_image.field1, 0.0)
     fill(r_image.field2, 0.0)
 
+    __demand(__index_launch)
     for color in p_halo.colors do
-        format.println("color {}", color)
-        compute(p_halo[color], p_private[color])
+        compute1(p_halo[color], p_private[color])
+    end
+
+    __demand(__index_launch)
+    for color in p_halo.colors do
+        compute2(p_halo[color], p_private[color])
     end
 end
 
