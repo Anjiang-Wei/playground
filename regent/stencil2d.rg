@@ -1,5 +1,7 @@
 import "regent"
 
+-- mpirun build/stencil2d -ll:gpu 4 -ll:fsize 15000 -ll:cpu 4 -ll:util 2 -lg:prof 1 -lg:prof_logfile prof
+
 local c = regentlib.c
 
 local format = require("std/format")
@@ -46,7 +48,7 @@ do
 end
 
 task toplevel()
-    var size = {32, 32}
+    var size = {50000, 50000}
     var machine = {2, 2}
     var r_image = region(ispace(int2d, size), Fields)
 
