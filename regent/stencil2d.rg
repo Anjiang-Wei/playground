@@ -2,6 +2,8 @@ import "regent"
 
 local c = regentlib.c
 
+local format = require("std/format")
+
 fspace Fields {
     field1: float,
     field2: float,
@@ -53,6 +55,7 @@ task toplevel()
     fill(r_image.field2, 0.0)
 
     for color in p_halo.colors do
+        format.println("color {}", color)
         compute(p_halo[color], p_private[color])
     end
 end
