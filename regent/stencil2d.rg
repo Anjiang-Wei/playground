@@ -19,6 +19,7 @@ task create_interior_partition(r_image: region(ispace(int2d), Fields))
     return interior_image_partition
 end
 
+__demand(__cuda)
 task compute(r_halo: region(ispace(int2d), Fields),
              r_interior: region(ispace(int2d), Fields))
 where
