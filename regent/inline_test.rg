@@ -23,8 +23,13 @@ end
 
 task main()
     var region_test = region(ispace(int1d, 10), test_struct)
-    fill(region_test.id, 2);
-    to_be_inline(region_test)
+    fill(region_test.id, 2)
+    var colors = ispace(int1d, 5)
+    var region_partition = partition(equal, region_test, colors)
+    __demand(__index_launch)
+    for color in region_partition.colors do
+        to_be_inline(region_partition[color])
+    end
 end
 
 local target = os.getenv("OBJNAME")
