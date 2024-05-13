@@ -1,0 +1,53 @@
+level 	level_ready 	ready 	start       	end         	color   	opacity 	title                  	initiation 	in 	out 	children 	parents 	prof_uid 	op_id 	instances
+    3 	            	      	5096499.225 	5096501.278 	#ff0086 	    1.0 	Intersections          	         4 	   	    	         	        	     106 	      	
+    3 	            	      	5096528.643 	5096529.005 	#ff0086 	    1.0 	Intersections          	         4 	   	    	         	        	     107 	      	
+    3 	            	      	5096599.394 	5096600.023 	#ff0086 	    1.0 	Intersection Reduction 	         4 	   	    	         	        	     108 	      	
+    3 	            	      	5096637.374 	5096638.814 	#ff0086 	    1.0 	Difference             	         4 	   	    	         	        	     109 	      	
+    3 	            	      	5097859.107 	5097862.213 	#00bbff 	    1.0 	Intersection Reduction 	         8 	   	    	         	        	     110 	      	
+    3 	            	      	5097899.341 	5097900.071 	#00bbff 	    1.0 	Difference             	         8 	   	    	         	        	     111 	      	
+    3 	            	      	5098779.318 	5098780.132 	#00bbff 	    1.0 	Intersection Reduction 	         8 	   	    	         	        	     112 	      	
+    3 	            	      	5098803.991 	5098804.496 	#00bbff 	    1.0 	Intersection Reduction 	         8 	   	    	         	        	     113 	      	
+    3 	            	      	5098819.631 	5098820.333 	#00bbff 	    1.0 	Difference             	         8 	   	    	         	        	     114 	      	
+    3 	            	      	5098870.665 	5098887.757 	#00bbff 	    1.0 	Union Reduction        	         8 	   	    	         	        	     115 	      	
+    3 	            	      	5099011.430 	5099012.464 	#00bbff 	    1.0 	Intersection Reduction 	         8 	   	    	         	        	     116 	      	
+    3 	            	      	5099143.495 	5099144.240 	#00bbff 	    1.0 	Intersection Reduction 	         8 	   	    	         	        	     117 	      	
+    3 	            	      	5099167.019 	5099167.559 	#00bbff 	    1.0 	Intersection Reduction 	         8 	   	    	         	        	     118 	      	
+    3 	            	      	5099182.773 	5099183.459 	#00bbff 	    1.0 	Difference             	         8 	   	    	         	        	     119 	      	
+    3 	            	      	5099208.836 	5099212.555 	#00bbff 	    1.0 	Union Reduction        	         8 	   	    	         	        	     120 	      	
+    3 	            	      	5099323.611 	5099324.472 	#00bbff 	    1.0 	Intersection Reduction 	         8 	   	    	         	        	     121 	      	
+    3 	            	      	5099347.176 	5099347.592 	#00bbff 	    1.0 	Intersection Reduction 	         8 	   	    	         	        	     122 	      	
+    3 	            	      	5099468.143 	5099468.850 	#00bbff 	    1.0 	Intersection Reduction 	         8 	   	    	         	        	     123 	      	
+    3 	            	      	5099485.986 	5099486.410 	#00bbff 	    1.0 	Intersection Reduction 	         8 	   	    	         	        	     124 	      	
+    3 	            	      	5099500.869 	5099501.588 	#00bbff 	    1.0 	Difference             	         8 	   	    	         	        	     125 	      	
+    3 	            	      	5099527.347 	5099530.751 	#00bbff 	    1.0 	Union Reduction        	         8 	   	    	         	        	     126 	      	
+    3 	            	      	5099634.501 	5099635.423 	#00bbff 	    1.0 	Intersection Reduction 	         8 	   	    	         	        	     127 	      	
+    3 	            	      	5099656.436 	5099656.876 	#00bbff 	    1.0 	Intersection Reduction 	         8 	   	    	         	        	     128 	      	
+    3 	            	      	5099667.023 	5099667.444 	#00bbff 	    1.0 	Intersection Reduction 	         8 	   	    	         	        	     129 	      	
+    3 	            	      	5099800.497 	5099801.153 	#00bbff 	    1.0 	Intersection Reduction 	         8 	   	    	         	        	     130 	      	
+    3 	            	      	5099823.519 	5099824.013 	#00bbff 	    1.0 	Intersection Reduction 	         8 	   	    	         	        	     131 	      	
+    3 	            	      	5099838.774 	5099839.410 	#00bbff 	    1.0 	Difference             	         8 	   	    	         	        	     132 	      	
+    3 	            	      	5099864.150 	5099867.712 	#00bbff 	    1.0 	Union Reduction        	         8 	   	    	         	        	     133 	      	
+    3 	            	      	5099976.350 	5099977.202 	#00bbff 	    1.0 	Intersection Reduction 	         8 	   	    	         	        	     134 	      	
+    3 	            	      	5099991.741 	5099992.042 	#00bbff 	    1.0 	Intersection Reduction 	         8 	   	    	         	        	     135 	      	
+    3 	            	      	5100001.782 	5100002.108 	#00bbff 	    1.0 	Intersection Reduction 	         8 	   	    	         	        	     136 	      	
+    3 	            	      	5100016.129 	5100016.489 	#00bbff 	    1.0 	Intersection Reduction 	         8 	   	    	         	        	     137 	      	
+    3 	            	      	5100136.422 	5100137.007 	#00bbff 	    1.0 	Intersection Reduction 	         8 	   	    	         	        	     138 	      	
+    3 	            	      	5100179.481 	5100182.800 	#00bbff 	    1.0 	Union Reduction        	         8 	   	    	         	        	     139 	      	
+    3 	            	      	5100290.258 	5100291.119 	#00bbff 	    1.0 	Intersection Reduction 	         8 	   	    	         	        	     140 	      	
+    3 	            	      	5100305.500 	5100305.817 	#00bbff 	    1.0 	Intersection Reduction 	         8 	   	    	         	        	     141 	      	
+    3 	            	      	5100320.881 	5100321.191 	#00bbff 	    1.0 	Intersection Reduction 	         8 	   	    	         	        	     142 	      	
+    3 	            	      	5100331.612 	5100331.895 	#00bbff 	    1.0 	Intersection Reduction 	         8 	   	    	         	        	     143 	      	
+    3 	            	      	5100340.899 	5100341.217 	#00bbff 	    1.0 	Intersection Reduction 	         8 	   	    	         	        	     144 	      	
+    3 	            	      	5100833.572 	5100834.351 	#c4ff00 	    1.0 	Intersection Reduction 	        15 	   	    	         	        	     145 	      	
+    3 	            	      	5100854.348 	5100854.755 	#c4ff00 	    1.0 	Intersection Reduction 	        15 	   	    	         	        	     146 	      	
+    3 	            	      	5100868.596 	5100868.961 	#c4ff00 	    1.0 	Intersection Reduction 	        15 	   	    	         	        	     147 	      	
+    3 	            	      	5100879.719 	5100880.015 	#c4ff00 	    1.0 	Intersection Reduction 	        15 	   	    	         	        	     148 	      	
+    3 	            	      	5100947.215 	5100948.170 	#c4ff00 	    1.0 	Difference             	        15 	   	    	         	        	     149 	      	
+    3 	            	      	5100970.685 	5100974.254 	#c4ff00 	    1.0 	Union Reduction        	        15 	   	    	         	        	     150 	      	
+    3 	            	      	5101041.543 	5101042.172 	#c4ff00 	    1.0 	Intersection Reduction 	        15 	   	    	         	        	     151 	      	
+    3 	            	      	5101056.230 	5101056.510 	#c4ff00 	    1.0 	Intersection Reduction 	        15 	   	    	         	        	     152 	      	
+    3 	            	      	5101429.131 	5101429.876 	#c4ff00 	    1.0 	Intersection Reduction 	        17 	   	    	         	        	     153 	      	
+    3 	            	      	5101450.129 	5101450.573 	#c4ff00 	    1.0 	Intersection Reduction 	        17 	   	    	         	        	     154 	      	
+    3 	            	      	5101514.310 	5101514.975 	#c4ff00 	    1.0 	Intersection Reduction 	        17 	   	    	         	        	     155 	      	
+    3 	            	      	5101531.986 	5101532.304 	#c4ff00 	    1.0 	Intersection Reduction 	        17 	   	    	         	        	     156 	      	
+    3 	            	      	5101541.889 	5101542.243 	#c4ff00 	    1.0 	Intersection Reduction 	        17 	   	    	         	        	     157 	      	

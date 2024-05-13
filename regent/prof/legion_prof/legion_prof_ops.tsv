@@ -1,0 +1,24 @@
+op_id 	parent_id 	desc                            	proc                             	level 	provenance
+    0 	          	Operation <0>                   	                                 	      	
+    2 	          	main [primary] <2>              	CPU Processor 0x1d00000000000001 	    2 	
+    3 	        2 	Pending Partition Operation <3> 	                                 	      	
+    4 	        2 	Pending Partition Operation <4> 	                                 	      	
+    5 	        2 	Fill Operation <5>              	                                 	      	
+    6 	        2 	blink <6>                       	                                 	      	/scratch2/anjiang/playground/regent/blink.rg:45
+    7 	        2 	Refinement Operation <7>        	                                 	      	/scratch2/anjiang/playground/regent/blink.rg:45
+    8 	        2 	blink <8>                       	                                 	      	/scratch2/anjiang/playground/regent/blink.rg:45
+    9 	        2 	blink [primary] <9>             	CPU Processor 0x1d00000000000001 	    2 	/scratch2/anjiang/playground/regent/blink.rg:45
+   10 	        2 	blink [primary] <10>            	CPU Processor 0x1d00000000000001 	    2 	/scratch2/anjiang/playground/regent/blink.rg:45
+   11 	        2 	blink [primary] <11>            	CPU Processor 0x1d00000000000001 	    2 	/scratch2/anjiang/playground/regent/blink.rg:45
+   12 	        2 	blink [primary] <12>            	CPU Processor 0x1d00000000000001 	    2 	/scratch2/anjiang/playground/regent/blink.rg:45
+   13 	        2 	blink [primary] <13>            	CPU Processor 0x1d00000000000001 	    2 	/scratch2/anjiang/playground/regent/blink.rg:45
+   14 	        2 	blink [primary] <14>            	CPU Processor 0x1d00000000000001 	    2 	/scratch2/anjiang/playground/regent/blink.rg:45
+   15 	        2 	blink [primary] <15>            	CPU Processor 0x1d00000000000001 	    2 	/scratch2/anjiang/playground/regent/blink.rg:49
+   16 	        2 	Merge Close Operation <16>      	                                 	      	/scratch2/anjiang/playground/regent/blink.rg:49
+   17 	        2 	blink [primary] <17>            	CPU Processor 0x1d00000000000001 	    2 	/scratch2/anjiang/playground/regent/blink.rg:49
+   18 	        2 	Merge Close Operation <18>      	                                 	      	/scratch2/anjiang/playground/regent/blink.rg:49
+   19 	        2 	printer [primary] <19>          	CPU Processor 0x1d00000000000001 	    2 	/scratch2/anjiang/playground/regent/blink.rg:51
+   20 	        2 	Merge Close Operation <20>      	                                 	      	/scratch2/anjiang/playground/regent/blink.rg:51
+   21 	        2 	Deletion Operation <21>         	                                 	      	
+   22 	        2 	Deletion Operation <22>         	                                 	      	
+   23 	        2 	Deletion Operation <23>         	                                 	      	
