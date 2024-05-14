@@ -58,6 +58,9 @@ for file in tsv_files:
 # Concatenate all dataframes, aligning columns
 combined_df = pd.concat(dataframes, ignore_index=True, sort=False)
 
+# Filter out rows where 'title' contains 'ProfTask'
+combined_df = combined_df[~combined_df['title'].str.contains('ProfTask', na=False)]
+
 # Filter to retain only the specified columns
 columns_to_retain = ['prof_uid', 'op_id', 'title', 'ready', 'start', 'end', 'in', 'out', 'initiation']
 combined_df = combined_df[columns_to_retain]
