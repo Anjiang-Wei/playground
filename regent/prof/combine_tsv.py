@@ -59,7 +59,7 @@ for file in tsv_files:
 combined_df = pd.concat(dataframes, ignore_index=True, sort=False)
 
 # Filter out rows where 'title' contains 'ProfTask'
-combined_df = combined_df[~combined_df['title'].str.contains('ProfTask', na=False)]
+combined_df = combined_df[~combined_df['title'].str.contains('ProfTask|Region:', na=False)]
 
 # Filter to retain only the specified columns
 columns_to_retain = ['prof_uid', 'op_id', 'title', 'ready', 'start', 'end', 'in', 'out', 'initiation']
@@ -107,4 +107,4 @@ final_columns = ['prof_uid', 'wait', 'execution', 'op_id', 'title', 'ready', 'st
 grouped = grouped[final_columns]
 
 # Save the combined dataframe to a new TSV file
-grouped.to_csv('combined2.tsv', sep='\t', index=False)
+grouped.to_csv('combined.tsv', sep='\t', index=False)
