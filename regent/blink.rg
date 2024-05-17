@@ -29,6 +29,7 @@ do
     for i in bit_region do
         bit_region[i].bit = not bit_region[i].bit
     end
+    c.sleep(1);
 end
 
 task main()
