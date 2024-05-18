@@ -4,7 +4,8 @@ import ast
 from itertools import chain
 
 # List all your TSV files
-tsv_files = glob('legion_prof/tsv/*.tsv')
+app = "blinks"
+tsv_files = glob(f'{app}/tsv/*.tsv')
 tsv_files = list(filter(lambda x: not "_util.tsv" in x, tsv_files))
 
 # Initialize an empty list to store dataframes
@@ -46,6 +47,8 @@ def check_consistency(series):
     unique_values = series.dropna().unique()
     if len(unique_values) == 1:
         return unique_values[0]
+    elif len(unique_values) == 0:
+        return ''
     else:
         assert False, unique_values
 
@@ -58,7 +61,7 @@ for file in tsv_files:
 # Concatenate all dataframes, aligning columns
 combined_df = pd.concat(dataframes, ignore_index=True, sort=False)
 
-# Filter out rows where 'title' contains 'ProfTask'
+# Filter out rows where 'title' contains 'ProfTask' or 'Region'
 combined_df = combined_df[~combined_df['title'].str.contains('ProfTask|Region:', na=False)]
 
 # Filter to retain only the specified columns
@@ -107,4 +110,4 @@ final_columns = ['prof_uid', 'wait', 'execution', 'op_id', 'title', 'ready', 'st
 grouped = grouped[final_columns]
 
 # Save the combined dataframe to a new TSV file
-grouped.to_csv('combined.tsv', sep='\t', index=False)
+grouped.to_csv(f'{app}_combined.tsv', sep='\t', index=False)

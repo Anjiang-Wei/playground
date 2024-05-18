@@ -1,9 +1,12 @@
 import networkx as nx
 import pandas as pd
 import matplotlib.pyplot as plt
+import json
+from cpm import CPM
 
+app = "blinks"
 # Load the TSV data into a DataFrame
-df = pd.read_csv("combined.tsv", sep="\t")
+df = pd.read_csv(f"{app}_combined.tsv", sep="\t")
 
 # Strip leading/trailing spaces from column names
 df.columns = df.columns.str.strip()
@@ -56,34 +59,54 @@ if node_id in G.nodes:
 else:
     print(f"Node {node_id} not found in the graph.")
 
+# Only retain nodes with "<" in title
+nodes_to_retain = [node for node, attr in G.nodes(data=True) if '<' in attr.get('title', '')]
+G = G.subgraph(nodes_to_retain)
+
 # Remove nodes without edges
 nodes_with_edges = list(set([node for edge in G.edges for node in edge]))
 H = G.subgraph(nodes_with_edges)
-# Only retain nodes with "<" in title
-nodes_to_retain = [node for node, attr in H.nodes(data=True) if '<' in attr.get('title', '')]
-H = H.subgraph(nodes_to_retain)
+
+print("nodes with edges computed")
+
+
+print("nodes retained")
 
 # Create labels using 'title' and 'prof_uid'
 labels = {node_id: attr['title'] + ' (' + str(attr['prof_uid']) + ')' for node_id, attr in H.nodes(data=True)}
 
 # Function to find all paths in the graph
-def find_all_paths(graph):
-    all_paths = []
-    for start_node in graph.nodes:
-        for end_node in graph.nodes:
-            if start_node != end_node:
-                for path in nx.all_simple_paths(graph, source=start_node, target=end_node):
-                    all_paths.append(path)
-    return all_paths
 
-# Find all paths in the graph H
-all_paths = find_all_paths(H)
+def dump_critical_path_to_json(critical_path, file_name=f'/scratch2/anjiang/public_html/{app}_test/json/critical_path.json'):
+    # Format the critical path data as specified
+    data = [{"tuple": [0, 0, node], "obj": []} for node in critical_path]
+    
+    # Write to JSON file
+    with open(file_name, 'w') as f:
+        json.dump(data, f, indent=4)
+    
+    print(f"Critical path dumped to {file_name}")
 
 
-def maximum_execution_time():
+
+def naive_maximum_execution_time(H):
+    def find_all_paths(graph):
+        source_nodes = [node for node in graph.nodes() if graph.in_degree(node) == 0]
+        sink_nodes = [node for node in graph.nodes() if graph.out_degree(node) == 0]
+        print("len source nodes", len(source_nodes), source_nodes)
+        print("len sink nodes", len(sink_nodes), sink_nodes)
+        
+        # Function to find all paths from source nodes to sink nodes
+        all_paths = []
+        for start_node in source_nodes:
+            for end_node in sink_nodes:
+                if start_node != end_node and nx.has_path(graph, start_node, end_node):
+                    for path in nx.all_simple_paths(graph, source=start_node, target=end_node):
+                        all_paths.append(path)
+        return all_paths
     # Calculate the total execution time for each path
     path_execution_times = []
-    for path in all_paths:
+    for path in find_all_paths(H):
         execution_time = sum(H.nodes[node]['execution'] for node in path if 'execution' in H.nodes[node])
         if len(path) > 1:  # Only consider non-trivial paths
             path_execution_times.append((path, execution_time))
@@ -94,31 +117,26 @@ def maximum_execution_time():
     print("Critical Path:", critical_path)
     print("Max Execution Time:", max_execution_time)
 
-maximum_execution_time()
+naive_maximum_execution_time(H)
 
-def maximum_spanning_time():
-    # Calculate the spanning time for each path
-    path_spanning_times = []
-    for path in all_paths:
-        start_time = H.nodes[path[0]]['start']
-        end_time = H.nodes[path[-1]]['end']
-        spanning_time = end_time - start_time
-        if len(path) > 1:  # Only consider non-trivial paths
-            path_spanning_times.append((path, spanning_time))
+def compute_critical_path(H):
+    G = CPM()
+    G.add_nodes_from(H.nodes(data=True))
+    G.add_edges_from(H.edges())
+    critical_path_length = G.critical_path_length
+    critical_path = G.critical_path
 
-    # Find the critical path based on maximum spanning time
-    critical_path, max_spanning_time = max(path_spanning_times, key=lambda x: x[1], default=([], 0))
+    print("Critical Path:", critical_path)
+    print("Max Execution Time:", critical_path_length)
+    dump_critical_path_to_json(critical_path)
 
-    print("Critical Path based on maximum spanning time:", critical_path)
-    print("Max Spanning Time:", max_spanning_time)
+compute_critical_path(H)
 
-maximum_spanning_time()
+# Visualize the graph using spring layout
+plt.figure(figsize=(40, 40))
+pos = nx.spring_layout(H)#, k=2)  # Adjust the k parameter for better spacing
+nx.draw(H, pos, labels=labels, with_labels=True, node_size=5000, node_color="lightblue", font_size=30, font_weight="bold", arrows=True, arrowstyle='-|>', arrowsize=30)
+plt.title("Graph Visualization")
 
-# # Visualize the graph using spring layout
-# plt.figure(figsize=(100, 100))
-# pos = nx.spring_layout(H, k=2)  # Adjust the k parameter for better spacing
-# nx.draw(H, pos, labels=labels, with_labels=True, node_size=5000, node_color="lightblue", font_size=30, font_weight="bold", arrows=True, arrowstyle='-|>', arrowsize=30)
-# plt.title("Graph Visualization")
-
-# # Save the visualization as a PDF
-# plt.savefig("graph_visualization.pdf")
+# Save the visualization as a PDF
+plt.savefig(f"{app}.pdf")

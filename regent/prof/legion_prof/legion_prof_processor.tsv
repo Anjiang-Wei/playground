@@ -1,6 +1,0 @@
-full_text                                     	text                        	tsv                                                    	levels
-Utility Processor 0x1d00000000000000          	Utility Proc 0              	tsv/Proc_0x1d00000000000000.tsv                        	     3
-CPU Processor 0x1d00000000000001              	CPU Proc 1                  	tsv/Proc_0x1d00000000000001.tsv                        	     1
-Dependent Partition Channel                   	Dependent Partition Channel 	tsv/(None,_None,_DepPart).tsv                          	     3
-Fill System Memory 0x1e00000000000000 Channel 	Fill [n0] sys               	tsv/(None,_System_Memory_0x1e00000000000000,_Fill).tsv 	     3
-System Memory 0x1e00000000000000              	[n0] sys                    	tsv/Mem_0x1e00000000000000.tsv                         	     3

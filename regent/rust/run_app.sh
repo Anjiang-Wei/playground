@@ -1,0 +1,3 @@
+mpirun build/blinks -lg:prof 1 -lg:prof_logfile prof_blinks_%.log -lg:spy -logfile spy_blinks_%.log
+# -lg:prof 1 -lg:prof_logfile prof_circuit_%.gz -lg:spy -logfile spy_circuit_%.log
+LD_LIBRARY_PATH=/scratch2/anjiang/perfanalysis/legions/language/circuit.run1 mpirun --bind-to none /scratch2/anjiang/perfanalysis/legions/language/circuit.run1/circuit -npp 1000 -wpp 10000 -l 10 -p 10 -pps 10 -prune 30 -hl:sched 1024 -ll:gpu 4 -ll:csize 150000 -ll:fsize 15000 -ll:zsize 2048 -lg:prof 1 -lg:prof_logfile prof_circuit_%.gz -lg:spy -logfile spy_circuit_%.log
