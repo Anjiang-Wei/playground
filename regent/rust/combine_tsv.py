@@ -2,11 +2,13 @@ import pandas as pd
 from glob import glob
 import ast
 from itertools import chain
+import sys
 
 # List all your TSV files
-app = "blinks"
+app = sys.argv[1]
 tsv_files = glob(f'{app}/tsv/*.tsv')
 tsv_files = list(filter(lambda x: not "_util.tsv" in x, tsv_files))
+tsv_files = list(filter(lambda x: not "Mem_0x" in x, tsv_files))
 
 # Initialize an empty list to store dataframes
 dataframes = []
@@ -31,6 +33,7 @@ def union_lists(series):
     return list(set(chain.from_iterable(series)))
 
 # Function to find the maximum common substring
+# Also, only retain the "Copy: size=3.354 GiB, num reqs=2$" part if it's a copy
 def max_common_substring(series):
     strings = series.dropna().unique()  # Remove NaN values and get unique strings
     if len(strings) == 0:
@@ -40,6 +43,8 @@ def max_common_substring(series):
         common_substr = ''.join(x[0] for x in zip(common_substr, s) if x[0] == x[1])
         if not common_substr:
             break
+    if "Copy: size=" in common_substr:
+        common_substr = common_substr.split("$")[0]
     return common_substr
 
 # Function to check consistency and return a single value
@@ -61,8 +66,8 @@ for file in tsv_files:
 # Concatenate all dataframes, aligning columns
 combined_df = pd.concat(dataframes, ignore_index=True, sort=False)
 
-# Filter out rows where 'title' contains 'ProfTask' or 'Region'
-combined_df = combined_df[~combined_df['title'].str.contains('ProfTask|Region:', na=False)]
+# Filter out rows where 'title' contains 'ProfTask'
+combined_df = combined_df[~combined_df['title'].str.contains('ProfTask', na=False)]
 
 # Filter to retain only the specified columns
 columns_to_retain = ['prof_uid', 'op_id', 'title', 'ready', 'start', 'end', 'in', 'out', 'initiation']
@@ -94,8 +99,40 @@ grouped = combined_df.groupby('prof_uid').agg({
     'initiation': check_consistency  # Ensure initiation is consistent within the group
 }).reset_index()
 
-# Filter out groups where op_id or initiation values were not consistent
-grouped = grouped.dropna(subset=['op_id', 'initiation'])
+# Function to merge rows with same 'op_id' and specific 'title' patterns
+def merge_rows(df):
+    merged_rows = []
+    for i, row in df.iterrows():
+        op_id = row['op_id']
+        title = row['title'].strip()
+
+        if "GPU Kernel(s) for" in title:  # CUDA tasks
+            # Find the corresponding row
+            search_title = title.replace("GPU Kernel(s) for ", "").strip()
+            corresponding_row = df[(df['op_id'] == op_id) & (df['title'].str.strip() == search_title)]
+            
+            assert not corresponding_row.empty, f'Could not find corresponding row for {op_id} and {search_title}'
+            # GPU host task
+            host_row = corresponding_row.iloc[0]
+            # Merge rows
+            merged_row = row.copy()
+            merged_row['title'] = host_row['title']
+            merged_row['ready'] = min(row['ready'], host_row['ready'])
+            merged_row['start'] = min(row['start'], host_row['start'])
+            merged_row['end'] = max(row['end'], host_row['end'])
+            merged_row['in'] = host_row['in']
+            merged_row['out'] = host_row['out']
+            merged_row['initiation'] = host_row['initiation']
+
+            merged_rows.append(merged_row)
+        elif "[cuda] <" in title: # host task shouldn't be added twice
+            pass
+        else:
+            merged_rows.append(row)
+
+    return pd.DataFrame(merged_rows)
+
+grouped = merge_rows(grouped)
 
 # Compute 'wait' and 'execution' columns
 grouped['wait'] = grouped['start'] - grouped['ready']
@@ -110,4 +147,4 @@ final_columns = ['prof_uid', 'wait', 'execution', 'op_id', 'title', 'ready', 'st
 grouped = grouped[final_columns]
 
 # Save the combined dataframe to a new TSV file
-grouped.to_csv(f'{app}_combined.tsv', sep='\t', index=False)
+grouped.to_csv(f'{app}/{app}_combined.tsv', sep='\t', index=False)

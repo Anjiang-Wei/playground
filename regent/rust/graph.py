@@ -3,10 +3,11 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import json
 from cpm import CPM
+import sys
 
-app = "blinks"
+app = sys.argv[1]
 # Load the TSV data into a DataFrame
-df = pd.read_csv(f"{app}_combined.tsv", sep="\t")
+df = pd.read_csv(f"{app}/{app}_combined.tsv", sep="\t")
 
 # Strip leading/trailing spaces from column names
 df.columns = df.columns.str.strip()
@@ -52,20 +53,13 @@ else:
 
 # Now the graph G contains all nodes and edges, and can be queried for attributes
 
-# Example: Querying node attributes
-node_id = 14
-if node_id in G.nodes:
-    print(f"Attributes of node {node_id}: {G.nodes[node_id]}")
-else:
-    print(f"Node {node_id} not found in the graph.")
-
 # Only retain nodes with "<" in title
 nodes_to_retain = [node for node, attr in G.nodes(data=True) if '<' in attr.get('title', '')]
 G = G.subgraph(nodes_to_retain)
 
 # Remove nodes without edges
 nodes_with_edges = list(set([node for edge in G.edges for node in edge]))
-H = G.subgraph(nodes_with_edges)
+G = G.subgraph(nodes_with_edges)
 
 print("nodes with edges computed")
 
@@ -73,7 +67,7 @@ print("nodes with edges computed")
 print("nodes retained")
 
 # Create labels using 'title' and 'prof_uid'
-labels = {node_id: attr['title'] + ' (' + str(attr['prof_uid']) + ')' for node_id, attr in H.nodes(data=True)}
+labels = {node_id: attr['title'] + ' (' + str(attr['prof_uid']) + ')' for node_id, attr in G.nodes(data=True)}
 
 # Function to find all paths in the graph
 
@@ -114,29 +108,29 @@ def naive_maximum_execution_time(H):
     # Find the critical path
     critical_path, max_execution_time = max(path_execution_times, key=lambda x: x[1], default=([], 0))
 
-    print("Critical Path:", critical_path)
+    print("Naive Critical Path:", critical_path)
     print("Max Execution Time:", max_execution_time)
 
-naive_maximum_execution_time(H)
+naive_maximum_execution_time(G)
 
 def compute_critical_path(H):
-    G = CPM()
-    G.add_nodes_from(H.nodes(data=True))
-    G.add_edges_from(H.edges())
-    critical_path_length = G.critical_path_length
-    critical_path = G.critical_path
+    newG = CPM()
+    newG.add_nodes_from(H.nodes(data=True))
+    newG.add_edges_from(H.edges())
+    critical_path_length = newG.critical_path_length
+    critical_path = newG.critical_path
 
-    print("Critical Path:", critical_path)
+    print("CPM method's Critical Path:", critical_path)
     print("Max Execution Time:", critical_path_length)
     dump_critical_path_to_json(critical_path)
 
-compute_critical_path(H)
+compute_critical_path(G)
 
 # Visualize the graph using spring layout
 plt.figure(figsize=(40, 40))
-pos = nx.spring_layout(H)#, k=2)  # Adjust the k parameter for better spacing
-nx.draw(H, pos, labels=labels, with_labels=True, node_size=5000, node_color="lightblue", font_size=30, font_weight="bold", arrows=True, arrowstyle='-|>', arrowsize=30)
+pos = nx.spring_layout(G)#, k=2)  # Adjust the k parameter for better spacing
+nx.draw(G, pos, labels=labels, with_labels=True, node_size=5000, node_color="lightblue", font_size=30, font_weight="bold", arrows=True, arrowstyle='-|>', arrowsize=30)
 plt.title("Graph Visualization")
 
 # Save the visualization as a PDF
-plt.savefig(f"{app}.pdf")
+plt.savefig(f"{app}/{app}.pdf")
