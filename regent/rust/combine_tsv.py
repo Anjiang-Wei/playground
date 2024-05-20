@@ -109,21 +109,15 @@ def merge_rows(df):
         if "GPU Kernel(s) for" in title:  # CUDA tasks
             # Find the corresponding row
             search_title = title.replace("GPU Kernel(s) for ", "").strip()
-            corresponding_row = df[(df['op_id'] == op_id) & (df['title'].str.strip() == search_title)]
-            
-            assert not corresponding_row.empty, f'Could not find corresponding row for {op_id} and {search_title}'
+            corresponding_row = df[(df['title'].str.strip() == search_title)]
+            assert len(corresponding_row) == 1, f"Could not find corresponding row for {op_id} and {search_title}, {len(corresponding_row)}"
             # GPU host task
             host_row = corresponding_row.iloc[0]
             # Merge rows
-            merged_row = row.copy()
-            merged_row['title'] = host_row['title']
+            merged_row = host_row.copy()
             merged_row['ready'] = min(row['ready'], host_row['ready'])
             merged_row['start'] = min(row['start'], host_row['start'])
             merged_row['end'] = max(row['end'], host_row['end'])
-            merged_row['in'] = host_row['in']
-            merged_row['out'] = host_row['out']
-            merged_row['initiation'] = host_row['initiation']
-
             merged_rows.append(merged_row)
         elif "[cuda] <" in title: # host task shouldn't be added twice
             pass

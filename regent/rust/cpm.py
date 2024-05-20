@@ -53,7 +53,7 @@ class CPM(nx.DiGraph):
     def _compute_critical_path(self):
         graph = set()
         for n in self:
-            if self.nodes[n]['EF'] == self.nodes[n]['LF']:
+            if abs(self.nodes[n]['EF'] - self.nodes[n]['LF']) < 1e-6:
                 graph.add(n)
         self._criticalPath = self.subgraph(graph)
 
@@ -75,6 +75,16 @@ class CPM(nx.DiGraph):
         self._backward()
         self._compute_critical_path()
         self._dirty = False
+    
+    def validate_first_element(self):
+        if self._dirty:
+            self._update()
+        first_element = min(self._criticalPath, key=lambda x: self.nodes[x]['ES'])
+        if self.nodes[first_element]['ES'] == 0:
+            print("First element validation pass")
+        else:
+            print(f"First element validation wrong: starting from {self.nodes[first_element]['ES']}")
+            assert False
 
 if __name__ == "__main__":
     G = CPM()
