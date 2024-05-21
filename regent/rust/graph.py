@@ -87,6 +87,8 @@ def compute_critical_path(G, app, dump=True):
         file_name = f'/scratch2/anjiang/public_html/{app}_test/json/critical_path.json'
         dump_critical_path_to_json(critical_path, file_name)
 
+    return critical_path
+
 if __name__ == "__main__":
     app = sys.argv[1]
     G = create_graph(app)
