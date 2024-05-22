@@ -61,17 +61,44 @@ def compute_bubbles(G, critical_path):
 
     return bubbles
 
+def report_stats(G, bubbles, critical_path):
+    # 1. Compute the bubble_time = sum of bubble's 'duration'
+    bubble_time = sum(bubble['duration'] for bubble in bubbles)
+    
+    # 2. Get the execution_time
+    execution_time = sum(G.nodes[node]['execution'] for node in critical_path)
+    
+    # 3. Compute the critical_path_time = critical_path's last element's end_time - first element's start_time
+    critical_path_time = G.nodes[critical_path[-1]]['end'] - G.nodes[critical_path[0]]['start']
+    
+    # 4. Validate that the bubble_time + execution_time == critical_path_time
+    if bubble_time + execution_time - critical_path_time > 1e-4:
+        print(f"Validation failed: bubble_time + execution_time ({bubble_time + execution_time}) != critical_path_time ({critical_path_time})")
+        assert False
+    
+    # 5. Compute the bubble_time_percentage = bubble_time / critical_path_time * 100
+    bubble_time_percentage = (bubble_time / critical_path_time) * 100
+
+    print(f"Bubble Time: {bubble_time}, len(bubbles): {len(bubbles)}")
+    print(f"Execution Time: {execution_time}")
+    print(f"Critical Path Time: {critical_path_time}")
+    print(f"Bubble Time Percentage: {bubble_time_percentage:.2f}%")
+
+    # Calculate the percentage of each bubble
+    for bubble in bubbles:
+        bubble['bubble_percentage'] = (bubble['duration'] / bubble_time) * 100
+
 if __name__ == "__main__":
     app = sys.argv[1]
     G = create_graph(app)
     critical_path = compute_critical_path(G, app, dump=False)
     bubbles = compute_bubbles(G, critical_path)
 
-    for bubble in bubbles[:5]:
-        print(f"Bubble Start Time: {bubble['b_start']}, Bubble End Time: {bubble['b_end']}, Duration: {bubble['duration']}")
+    report_stats(G, bubbles, critical_path)
+
+    for bubble in bubbles[:4]:
+        print(f"Bubble Start Time: {bubble['b_start']}, Bubble End Time: {bubble['b_end']}, Duration: {bubble['duration']},Bubble Percentage: {bubble['bubble_percentage']:.2f}%")
         print(f"Between Nodes: {G.nodes[bubble['prev']]['title']} -> {G.nodes[bubble['curr']]['title']}")
-        # print(f"Overlapping Nodes Prof UID: {bubble['overlap_prof_uid']}")
-        print(f"Overlapping Nodes Title: {bubble['overlap_title'][:5]}")
-        print(f"Overlapping Nodes Duration: {bubble['overlap_time'][:5]}")
-        print(f"Overlapping Nodes Percentage: {bubble['overlap_perc'][:5]}")
+        print(f"Overlapping Nodes Title: {bubble['overlap_title'][:3]}")
+        print(f"Overlapping Nodes Percentage: {bubble['overlap_perc'][:3]}")
         print()

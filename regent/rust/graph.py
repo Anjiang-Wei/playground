@@ -75,7 +75,7 @@ def compute_critical_path(G, app, dump=True):
     critical_path_length = newG.critical_path_length
     critical_path = newG.critical_path
 
-    print("CPM method's Critical Path:", critical_path)
+    # print("CPM method's Critical Path:", critical_path)
     newG.validate_first_element()
     # Retrieve the titles of the nodes on the critical path
     critical_path_titles = [newG.nodes[node]['title'] for node in critical_path]
