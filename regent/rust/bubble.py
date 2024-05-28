@@ -84,6 +84,35 @@ def report_stats(G, bubbles, critical_path):
     print(f"Critical Path Time: {critical_path_time}")
     print(f"Bubble Time Percentage: {bubble_time_percentage:.2f}%")
 
+    # Summarize execution time by task name
+    task_summary = {}
+    for node in critical_path:
+        title = G.nodes[node]['title']
+        task_name = title.split('<')[0].strip()
+        execution = G.nodes[node]['execution']
+        if task_name not in task_summary:
+            task_summary[task_name] = {'total_execution': 0, 'count': 0}
+        task_summary[task_name]['total_execution'] += execution
+        task_summary[task_name]['count'] += 1
+
+    # Convert execution time to milliseconds and calculate average execution time
+    task_summary_ms = {
+        task_name: {
+            'total_execution_ms': data['total_execution'] / 1000,
+            'count': data['count'],
+            'average_execution_ms': (data['total_execution'] / data['count']) / 1000
+        }
+        for task_name, data in task_summary.items()
+    }
+    sorted_task_summary = sorted(task_summary_ms.items(), key=lambda x: x[1]['total_execution_ms'], reverse=True)
+
+    print("\nExecution Time Summary by Task Name (in ms):")
+    header = f"{'Task Name':<30} {'Total Execution Time (ms)':>25} {'Counts':>12} {'Average Execution Time (ms)':>28}"
+    print(header)
+    print("-" * len(header))
+    for task_name, data in sorted_task_summary:
+        print(f"{task_name:<30} {data['total_execution_ms']:>25.2f} {data['count']:>12} {data['average_execution_ms']:>28.2f}")
+
     # Calculate the percentage of each bubble
     for bubble in bubbles:
         bubble['bubble_percentage'] = (bubble['duration'] / bubble_time) * 100
@@ -96,9 +125,9 @@ if __name__ == "__main__":
 
     report_stats(G, bubbles, critical_path)
 
-    for bubble in bubbles[:4]:
-        print(f"Bubble Start Time: {bubble['b_start']}, Bubble End Time: {bubble['b_end']}, Duration: {bubble['duration']},Bubble Percentage: {bubble['bubble_percentage']:.2f}%")
-        print(f"Between Nodes: {G.nodes[bubble['prev']]['title']} -> {G.nodes[bubble['curr']]['title']}")
-        print(f"Overlapping Nodes Title: {bubble['overlap_title'][:3]}")
-        print(f"Overlapping Nodes Percentage: {bubble['overlap_perc'][:3]}")
-        print()
+    # for bubble in bubbles[:6]:
+    #     print(f"Bubble Start Time: {bubble['b_start']}, Bubble End Time: {bubble['b_end']}, Duration: {bubble['duration']},Bubble Percentage: {bubble['bubble_percentage']:.2f}%")
+    #     print(f"Between Nodes: {G.nodes[bubble['prev']]['title']} -> {G.nodes[bubble['curr']]['title']}")
+    #     print(f"Overlapping Nodes Title: {bubble['overlap_title'][:3]}")
+    #     print(f"Overlapping Nodes Percentage: {bubble['overlap_perc'][:3]}")
+    #     print()
