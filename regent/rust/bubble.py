@@ -61,29 +61,7 @@ def compute_bubbles(G, critical_path):
 
     return bubbles
 
-def report_stats(G, bubbles, critical_path):
-    # 1. Compute the bubble_time = sum of bubble's 'duration'
-    bubble_time = sum(bubble['duration'] for bubble in bubbles)
-    
-    # 2. Get the execution_time
-    execution_time = sum(G.nodes[node]['execution'] for node in critical_path)
-    
-    # 3. Compute the critical_path_time = critical_path's last element's end_time - first element's start_time
-    critical_path_time = G.nodes[critical_path[-1]]['end'] - G.nodes[critical_path[0]]['start']
-    
-    # 4. Validate that the bubble_time + execution_time == critical_path_time
-    if bubble_time + execution_time - critical_path_time > 1e-4:
-        print(f"Validation failed: bubble_time + execution_time ({bubble_time + execution_time}) != critical_path_time ({critical_path_time})")
-        assert False
-    
-    # 5. Compute the bubble_time_percentage = bubble_time / critical_path_time * 100
-    bubble_time_percentage = (bubble_time / critical_path_time) * 100
-
-    print(f"Bubble Time: {bubble_time}, len(bubbles): {len(bubbles)}")
-    print(f"Execution Time: {execution_time}")
-    print(f"Critical Path Time: {critical_path_time}")
-    print(f"Bubble Time Percentage: {bubble_time_percentage:.2f}%")
-
+def report_task_stats(G, critical_path):
     # Summarize execution time by task name
     task_summary = {}
     for node in critical_path:
@@ -95,23 +73,29 @@ def report_stats(G, bubbles, critical_path):
         task_summary[task_name]['total_execution'] += execution
         task_summary[task_name]['count'] += 1
 
+    total_execution_time = sum(data['total_execution'] for data in task_summary.values())
+
     # Convert execution time to milliseconds and calculate average execution time
     task_summary_ms = {
         task_name: {
             'total_execution_ms': data['total_execution'] / 1000,
             'count': data['count'],
-            'average_execution_ms': (data['total_execution'] / data['count']) / 1000
+            'average_execution_ms': (data['total_execution'] / data['count']) / 1000,
+            'percentage': (data['total_execution'] / total_execution_time) * 100
         }
         for task_name, data in task_summary.items()
     }
     sorted_task_summary = sorted(task_summary_ms.items(), key=lambda x: x[1]['total_execution_ms'], reverse=True)
 
     print("\nExecution Time Summary by Task Name (in ms):")
-    header = f"{'Task Name':<30} {'Total Execution Time (ms)':>25} {'Counts':>12} {'Average Execution Time (ms)':>28}"
+    header = f"{'Task Name':<30} {'Total Execution Time (ms)':>25} {'Counts':>12} {'Average Execution Time (ms)':>28} {'Percentage':>12}"
     print(header)
     print("-" * len(header))
     for task_name, data in sorted_task_summary:
-        print(f"{task_name:<30} {data['total_execution_ms']:>25.2f} {data['count']:>12} {data['average_execution_ms']:>28.2f}")
+        print(f"{task_name:<30} {data['total_execution_ms']:>25.2f} {data['count']:>12} {data['average_execution_ms']:>28.2f} {data['percentage']:>12.2f}")
+
+def report_bubble_stats(G, bubbles):
+    bubble_time = sum(bubble['duration'] for bubble in bubbles)
 
     # Summarize bubble time by task name tuple (prev -> curr)
     bubble_summary = {}
@@ -129,18 +113,19 @@ def report_stats(G, bubbles, critical_path):
         bubble_name: {
             'total_duration_ms': data['total_duration'] / 1000,
             'count': data['count'],
-            'average_duration_ms': (data['total_duration'] / data['count']) / 1000
+            'average_duration_ms': (data['total_duration'] / data['count']) / 1000,
+            'percentage': (data['total_duration'] / bubble_time) * 100
         }
         for bubble_name, data in bubble_summary.items()
     }
     sorted_bubble_summary = sorted(bubble_summary_ms.items(), key=lambda x: x[1]['total_duration_ms'], reverse=True)
 
     print("\nBubble Time Summary by Task Name Tuple (in ms):")
-    header = f"{'Bubble Name':<70} {'Total Duration (ms)':>25} {'Counts':>12} {'Average Duration (ms)':>28}"
+    header = f"{'Bubble Name':<70} {'Total Duration (ms)':>25} {'Counts':>12} {'Average Duration (ms)':>28} {'Percentage':>12}"
     print(header)
     print("-" * len(header))
     for bubble_name, data in sorted_bubble_summary:
-        print(f"{bubble_name:<70} {data['total_duration_ms']:>25.2f} {data['count']:>12} {data['average_duration_ms']:>28.2f}")
+        print(f"{bubble_name:<70} {data['total_duration_ms']:>25.2f} {data['count']:>12} {data['average_duration_ms']:>28.2f} {data['percentage']:>12.2f}")
 
 if __name__ == "__main__":
     app = sys.argv[1]
@@ -148,4 +133,5 @@ if __name__ == "__main__":
     critical_path = compute_critical_path(G, app, dump=False)
     bubbles = compute_bubbles(G, critical_path)
 
-    report_stats(G, bubbles, critical_path)
+    report_task_stats(G, critical_path)
+    report_bubble_stats(G, bubbles)
