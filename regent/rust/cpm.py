@@ -80,9 +80,7 @@ class CPM(nx.DiGraph):
         if self._dirty:
             self._update()
         first_element = min(self._criticalPath, key=lambda x: self.nodes[x]['ES'])
-        if self.nodes[first_element]['ES'] == 0:
-            print("First element validation pass")
-        else:
+        if self.nodes[first_element]['ES'] != 0:
             print(f"First element validation wrong: starting from {self.nodes[first_element]['ES']}")
             assert False
 

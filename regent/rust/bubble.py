@@ -113,9 +113,34 @@ def report_stats(G, bubbles, critical_path):
     for task_name, data in sorted_task_summary:
         print(f"{task_name:<30} {data['total_execution_ms']:>25.2f} {data['count']:>12} {data['average_execution_ms']:>28.2f}")
 
-    # Calculate the percentage of each bubble
+    # Summarize bubble time by task name tuple (prev -> curr)
+    bubble_summary = {}
     for bubble in bubbles:
-        bubble['bubble_percentage'] = (bubble['duration'] / bubble_time) * 100
+        prev_title = G.nodes[bubble['prev']]['title'].split('<')[0].strip()
+        curr_title = G.nodes[bubble['curr']]['title'].split('<')[0].strip()
+        bubble_name = f"{prev_title} -> {curr_title}"
+        if bubble_name not in bubble_summary:
+            bubble_summary[bubble_name] = {'total_duration': 0, 'count': 0}
+        bubble_summary[bubble_name]['total_duration'] += bubble['duration']
+        bubble_summary[bubble_name]['count'] += 1
+
+    # Convert bubble duration to milliseconds and sort by total duration
+    bubble_summary_ms = {
+        bubble_name: {
+            'total_duration_ms': data['total_duration'] / 1000,
+            'count': data['count'],
+            'average_duration_ms': (data['total_duration'] / data['count']) / 1000
+        }
+        for bubble_name, data in bubble_summary.items()
+    }
+    sorted_bubble_summary = sorted(bubble_summary_ms.items(), key=lambda x: x[1]['total_duration_ms'], reverse=True)
+
+    print("\nBubble Time Summary by Task Name Tuple (in ms):")
+    header = f"{'Bubble Name':<70} {'Total Duration (ms)':>25} {'Counts':>12} {'Average Duration (ms)':>28}"
+    print(header)
+    print("-" * len(header))
+    for bubble_name, data in sorted_bubble_summary:
+        print(f"{bubble_name:<70} {data['total_duration_ms']:>25.2f} {data['count']:>12} {data['average_duration_ms']:>28.2f}")
 
 if __name__ == "__main__":
     app = sys.argv[1]
@@ -124,10 +149,3 @@ if __name__ == "__main__":
     bubbles = compute_bubbles(G, critical_path)
 
     report_stats(G, bubbles, critical_path)
-
-    # for bubble in bubbles[:6]:
-    #     print(f"Bubble Start Time: {bubble['b_start']}, Bubble End Time: {bubble['b_end']}, Duration: {bubble['duration']},Bubble Percentage: {bubble['bubble_percentage']:.2f}%")
-    #     print(f"Between Nodes: {G.nodes[bubble['prev']]['title']} -> {G.nodes[bubble['curr']]['title']}")
-    #     print(f"Overlapping Nodes Title: {bubble['overlap_title'][:3]}")
-    #     print(f"Overlapping Nodes Percentage: {bubble['overlap_perc'][:3]}")
-    #     print()

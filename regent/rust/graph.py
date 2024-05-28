@@ -78,10 +78,10 @@ def compute_critical_path(G, app, dump=True):
     # print("CPM method's Critical Path:", critical_path)
     newG.validate_first_element()
     # Retrieve the titles of the nodes on the critical path
-    critical_path_titles = [newG.nodes[node]['title'] for node in critical_path]
-    print("First 10 elements on the critical path:", critical_path_titles[:10])
+    # critical_path_titles = [newG.nodes[node]['title'] for node in critical_path]
+    # print("First 10 elements on the critical path:", critical_path_titles[:10])
 
-    print("Max Execution Time:", critical_path_length)
+    # print("Max Execution Time:", critical_path_length)
 
     if dump:
         file_name = f'/scratch2/anjiang/public_html/{app}_test/json/critical_path.json'
