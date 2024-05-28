@@ -74,6 +74,8 @@ def report_task_stats(G, critical_path):
         task_summary[task_name]['count'] += 1
 
     total_execution_time = sum(data['total_execution'] for data in task_summary.values())
+    critical_path_time = G.nodes[critical_path[-1]]['end'] - G.nodes[critical_path[0]]['start']
+    execution_percentage_of_critical_path = (total_execution_time / critical_path_time) * 100
 
     # Convert execution time to milliseconds and calculate average execution time
     task_summary_ms = {
@@ -94,15 +96,20 @@ def report_task_stats(G, critical_path):
     for task_name, data in sorted_task_summary:
         print(f"{task_name:<30} {data['total_execution_ms']:>25.2f} {data['count']:>12} {data['average_execution_ms']:>28.2f} {data['percentage']:>12.2f}")
 
-def report_bubble_stats(G, bubbles):
+    print(f"\nTotal Execution Time: {total_execution_time / 1000:.2f} ms")
+    print(f"Percentage of Critical Path: {execution_percentage_of_critical_path:.2f}%")
+
+def report_bubble_stats(G, bubbles, critical_path):
     bubble_time = sum(bubble['duration'] for bubble in bubbles)
+    critical_path_time = G.nodes[critical_path[-1]]['end'] - G.nodes[critical_path[0]]['start']
+    bubble_percentage_of_critical_path = (bubble_time / critical_path_time) * 100
 
     # Summarize bubble time by task name tuple (prev -> curr)
     bubble_summary = {}
     for bubble in bubbles:
         prev_title = G.nodes[bubble['prev']]['title'].split('<')[0].strip()
         curr_title = G.nodes[bubble['curr']]['title'].split('<')[0].strip()
-        bubble_name = f"{prev_title} -> {curr_title}"
+        bubble_name = f"{prev_title:<30} -> {curr_title:<30}"
         if bubble_name not in bubble_summary:
             bubble_summary[bubble_name] = {'total_duration': 0, 'count': 0}
         bubble_summary[bubble_name]['total_duration'] += bubble['duration']
@@ -127,6 +134,9 @@ def report_bubble_stats(G, bubbles):
     for bubble_name, data in sorted_bubble_summary:
         print(f"{bubble_name:<70} {data['total_duration_ms']:>25.2f} {data['count']:>12} {data['average_duration_ms']:>28.2f} {data['percentage']:>12.2f}")
 
+    print(f"\nTotal Bubble Time: {bubble_time / 1000:.2f} ms")
+    print(f"Percentage of Critical Path: {bubble_percentage_of_critical_path:.2f}%")
+
 if __name__ == "__main__":
     app = sys.argv[1]
     G = create_graph(app)
@@ -134,4 +144,4 @@ if __name__ == "__main__":
     bubbles = compute_bubbles(G, critical_path)
 
     report_task_stats(G, critical_path)
-    report_bubble_stats(G, bubbles)
+    report_bubble_stats(G, bubbles, critical_path)
