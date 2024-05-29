@@ -54,16 +54,18 @@ def print_combined_diff_report(app1, app2, combined_diff, total_critical_path_di
 
     print(f"\nTotal of Differences: {total_diff_sum:.2f} ms")
     print(f"Sum of Percentages: {total_percentage_sum:.2f}%")
-    print(f"\nCritical Path Time for {app1}: {critical_path_time1 / 1000:.2f} ms")
-    print(f"Critical Path Time for {app2}: {critical_path_time2 / 1000:.2f} ms")
-    print(f"Total Critical Path Time Difference: {total_critical_path_diff:.2f} ms")
+    critical_path_time1 /= 1000
+    critical_path_time2 /= 1000
+    print(f"\nCritical Path Time for {app1}: {critical_path_time1:.2f} ms")
+    print(f"Critical Path Time for {app2}: {critical_path_time2:.2f} ms")
+    print(f"Total Critical Path Time Difference: {total_critical_path_diff:.2f} ms, percentage: {(total_critical_path_diff / critical_path_time1) * 100:.2f}%\n")
 
 def main(app1, app2):
     task_summary_ms1, bubble_summary_ms1, critical_path_time1 = analyze_app(app1)
     task_summary_ms2, bubble_summary_ms2, critical_path_time2 = analyze_app(app2)
 
     # Compute total critical path time difference
-    total_critical_path_diff = (critical_path_time2 - critical_path_time1) / 1000
+    total_critical_path_diff = (critical_path_time1 - critical_path_time2) / 1000
 
     # Differential analysis for task execution time
     task_diff = differential_analysis(task_summary_ms1, task_summary_ms2, 'total_execution_ms', total_critical_path_diff)
