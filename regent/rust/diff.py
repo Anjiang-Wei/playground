@@ -19,20 +19,38 @@ def differential_analysis(summary1, summary2, key, total_diff):
             difference = v1[key] - v2[key]
             diff[k] = {
                 'difference_ms': difference,
-                'percentage_of_total_diff': (difference / total_diff) * 100 if total_diff != 0 else 0
+                'percentage_of_total_diff': (difference / total_diff) * 100 if total_diff != 0 else 0,
+                'time1_ms': v1[key],
+                'time2_ms': v2[key],
+                'count1': v1['count'],
+                'count2': v2['count'],
+                'avg_time1_ms': v1[key] / v1['count'],
+                'avg_time2_ms': v2[key] / v2['count']
             }
         else:
             difference = v1[key]
             diff[k] = {
                 'difference_ms': difference,
-                'percentage_of_total_diff': (difference / total_diff) * 100 if total_diff != 0 else 0
+                'percentage_of_total_diff': (difference / total_diff) * 100 if total_diff != 0 else 0,
+                'time1_ms': v1[key],
+                'time2_ms': 0,
+                'count1': v1['count'],
+                'count2': 0,
+                'avg_time1_ms': v1[key] / v1['count'],
+                'avg_time2_ms': 0
             }
     for k, v2 in summary2.items():
         if k not in diff:
             difference = -v2[key]
             diff[k] = {
                 'difference_ms': difference,
-                'percentage_of_total_diff': (difference / total_diff) * 100 if total_diff != 0 else 0
+                'percentage_of_total_diff': (difference / total_diff) * 100 if total_diff != 0 else 0,
+                'time1_ms': 0,
+                'time2_ms': v2[key],
+                'count1': 0,
+                'count2': v2['count'],
+                'avg_time1_ms': 0,
+                'avg_time2_ms': v2[key] / v2['count']
             }
     return sorted(diff.items(), key=lambda x: abs(x[1]['difference_ms']), reverse=True)
 
@@ -41,7 +59,8 @@ def truncate_name(name, max_length=80):
 
 def print_combined_diff_report(app1, app2, combined_diff, total_critical_path_diff, critical_path_time1, critical_path_time2):
     print("\nCombined Differential Analysis of Task Execution and Bubble Duration (in ms):")
-    header = f"{'Name':<80} {'Difference (ms)':>20} {'Percentage of Total Diff':>30}"
+    header = (f"{'Name':<80} {'Difference (ms)':>20} {'Percentage of Total Diff':>30} {'Time1 (ms)':>20} {'Time2 (ms)':>20} "
+              f"{'Count1':>10} {'Count2':>10} {'AvgTime1 (ms)':>20} {'AvgTime2 (ms)':>20}")
     print(header)
     print("-" * len(header))
     total_diff_sum = 0
@@ -50,7 +69,9 @@ def print_combined_diff_report(app1, app2, combined_diff, total_critical_path_di
         truncated_name = truncate_name(name)
         total_diff_sum += data['difference_ms']
         total_percentage_sum += data['percentage_of_total_diff']
-        print(f"{truncated_name:<80} {data['difference_ms']:>20.2f} {data['percentage_of_total_diff']:>30.2f}")
+        print(f"{truncated_name:<80} {data['difference_ms']:>20.2f} {data['percentage_of_total_diff']:>30.2f} "
+              f"{data['time1_ms']:>20.2f} {data['time2_ms']:>20.2f} {data['count1']:>10} {data['count2']:>10} "
+              f"{data['avg_time1_ms']:>20.2f} {data['avg_time2_ms']:>20.2f}")
 
     print(f"\nTotal of Differences: {total_diff_sum:.2f} ms")
     print(f"Sum of Percentages: {total_percentage_sum:.2f}%")
