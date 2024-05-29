@@ -98,6 +98,7 @@ def report_task_stats(G, critical_path):
 
     print(f"\nTotal Execution Time: {total_execution_time / 1000:.2f} ms")
     print(f"Percentage of Critical Path: {execution_percentage_of_critical_path:.2f}%")
+    return task_summary_ms
 
 def report_bubble_stats(G, bubbles, critical_path):
     bubble_time = sum(bubble['duration'] for bubble in bubbles)
@@ -136,6 +137,7 @@ def report_bubble_stats(G, bubbles, critical_path):
 
     print(f"\nTotal Bubble Time: {bubble_time / 1000:.2f} ms")
     print(f"Percentage of Critical Path: {bubble_percentage_of_critical_path:.2f}%")
+    return bubble_summary_ms
 
 if __name__ == "__main__":
     app = sys.argv[1]
