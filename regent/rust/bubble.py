@@ -1,4 +1,5 @@
 import sys
+import statistics
 from graph import create_graph, compute_critical_path
 
 def find_overlapping_nodes(G, bubble_start_time, bubble_end_time):
@@ -69,20 +70,24 @@ def report_task_stats(G, critical_path):
         task_name = title.split('<')[0].strip()
         execution = G.nodes[node]['execution']
         if task_name not in task_summary:
-            task_summary[task_name] = {'total_execution': 0, 'count': 0}
+            task_summary[task_name] = {'total_execution': 0, 'count': 0, 'executions': []}
         task_summary[task_name]['total_execution'] += execution
         task_summary[task_name]['count'] += 1
+        task_summary[task_name]['executions'].append(execution)
 
     total_execution_time = sum(data['total_execution'] for data in task_summary.values())
     critical_path_time = G.nodes[critical_path[-1]]['end'] - G.nodes[critical_path[0]]['start']
     execution_percentage_of_critical_path = (total_execution_time / critical_path_time) * 100
 
-    # Convert execution time to milliseconds and calculate average execution time
+    # Convert execution time to milliseconds and calculate average, min, max, std deviation
     task_summary_ms = {
         task_name: {
             'total_execution_ms': data['total_execution'] / 1000,
             'count': data['count'],
             'average_execution_ms': (data['total_execution'] / data['count']) / 1000,
+            'min_execution_ms': min(data['executions']) / 1000,
+            'max_execution_ms': max(data['executions']) / 1000,
+            'std_execution_ms': statistics.stdev(data['executions']) / 1000 if data['count'] > 1 else 0,
             'percentage': (data['total_execution'] / total_execution_time) * 100
         }
         for task_name, data in task_summary.items()
@@ -90,11 +95,11 @@ def report_task_stats(G, critical_path):
     sorted_task_summary = sorted(task_summary_ms.items(), key=lambda x: x[1]['total_execution_ms'], reverse=True)
 
     print("\nExecution Time Summary by Task Name (in ms):")
-    header = f"{'Task Name':<30} {'Total Execution Time (ms)':>25} {'Counts':>12} {'Average Execution Time (ms)':>28} {'Percentage':>12}"
+    header = f"{'Task Name':<30} {'Total Execution Time (ms)':>25} {'Percentage':>12} {'Counts':>12} {'Average Execution Time (ms)':>28} {'Min (ms)':>10} {'Max (ms)':>10} {'Std Dev (ms)':>15}"
     print(header)
     print("-" * len(header))
     for task_name, data in sorted_task_summary:
-        print(f"{task_name:<30} {data['total_execution_ms']:>25.2f} {data['count']:>12} {data['average_execution_ms']:>28.2f} {data['percentage']:>12.2f}")
+        print(f"{task_name:<30} {data['total_execution_ms']:>25.2f} {data['percentage']:>12.2f} {data['count']:>12} {data['average_execution_ms']:>28.2f} {data['min_execution_ms']:>10.2f} {data['max_execution_ms']:>10.2f} {data['std_execution_ms']:>15.2f}")
 
     print(f"\nTotal Execution Time: {total_execution_time / 1000:.2f} ms")
     print(f"Percentage of Critical Path: {execution_percentage_of_critical_path:.2f}%")
@@ -112,9 +117,10 @@ def report_bubble_stats(G, bubbles, critical_path):
         curr_title = G.nodes[bubble['curr']]['title'].split('<')[0].strip()
         bubble_name = f"{prev_title:<30} -> {curr_title:<30}"
         if bubble_name not in bubble_summary:
-            bubble_summary[bubble_name] = {'total_duration': 0, 'count': 0}
+            bubble_summary[bubble_name] = {'total_duration': 0, 'count': 0, 'durations': []}
         bubble_summary[bubble_name]['total_duration'] += bubble['duration']
         bubble_summary[bubble_name]['count'] += 1
+        bubble_summary[bubble_name]['durations'].append(bubble['duration'])
 
     # Convert bubble duration to milliseconds and sort by total duration
     bubble_summary_ms = {
@@ -122,6 +128,9 @@ def report_bubble_stats(G, bubbles, critical_path):
             'total_duration_ms': data['total_duration'] / 1000,
             'count': data['count'],
             'average_duration_ms': (data['total_duration'] / data['count']) / 1000,
+            'min_duration_ms': min(data['durations']) / 1000,
+            'max_duration_ms': max(data['durations']) / 1000,
+            'std_duration_ms': statistics.stdev(data['durations']) / 1000 if data['count'] > 1 else 0,
             'percentage': (data['total_duration'] / bubble_time) * 100
         }
         for bubble_name, data in bubble_summary.items()
@@ -129,11 +138,11 @@ def report_bubble_stats(G, bubbles, critical_path):
     sorted_bubble_summary = sorted(bubble_summary_ms.items(), key=lambda x: x[1]['total_duration_ms'], reverse=True)
 
     print("\nBubble Time Summary by Task Name Tuple (in ms):")
-    header = f"{'Bubble Name':<70} {'Total Duration (ms)':>25} {'Counts':>12} {'Average Duration (ms)':>28} {'Percentage':>12}"
+    header = f"{'Bubble Name':<70} {'Total Duration (ms)':>25} {'Percentage':>12} {'Counts':>12} {'Average Duration (ms)':>28} {'Min (ms)':>10} {'Max (ms)':>10} {'Std Dev (ms)':>15}"
     print(header)
     print("-" * len(header))
     for bubble_name, data in sorted_bubble_summary:
-        print(f"{bubble_name:<70} {data['total_duration_ms']:>25.2f} {data['count']:>12} {data['average_duration_ms']:>28.2f} {data['percentage']:>12.2f}")
+        print(f"{bubble_name:<70} {data['total_duration_ms']:>25.2f} {data['percentage']:>12.2f} {data['count']:>12} {data['average_duration_ms']:>28.2f} {data['min_duration_ms']:>10.2f} {data['max_duration_ms']:>10.2f} {data['std_duration_ms']:>15.2f}")
 
     print(f"\nTotal Bubble Time: {bubble_time / 1000:.2f} ms")
     print(f"Percentage of Critical Path: {bubble_percentage_of_critical_path:.2f}%")
