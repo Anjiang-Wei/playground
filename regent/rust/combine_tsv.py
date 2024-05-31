@@ -3,9 +3,17 @@ from glob import glob
 import ast
 from itertools import chain
 import sys
+import os
 
 # List all your TSV files
 app = sys.argv[1]
+combined_tsv_path = f'{app}/{app}_combined.tsv'
+
+# Check if the combined TSV file already exists
+if os.path.exists(combined_tsv_path):
+    print(f"The file {combined_tsv_path} already exists. Skipping processing.")
+    sys.exit(0)
+
 tsv_files = glob(f'{app}/tsv/*.tsv')
 tsv_files = list(filter(lambda x: not "_util.tsv" in x, tsv_files))
 tsv_files = list(filter(lambda x: not "Mem_0x" in x, tsv_files))
@@ -141,4 +149,4 @@ final_columns = ['prof_uid', 'wait', 'execution', 'op_id', 'title', 'ready', 'st
 grouped = grouped[final_columns]
 
 # Save the combined dataframe to a new TSV file
-grouped.to_csv(f'{app}/{app}_combined.tsv', sep='\t', index=False)
+grouped.to_csv(combined_tsv_path, sep='\t', index=False)
